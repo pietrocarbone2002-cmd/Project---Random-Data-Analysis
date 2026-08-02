@@ -50,7 +50,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2 = QVBoxLayout(self.WidgetCanvas)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.layoutcanvas.addWidget(self.canvas)
 
 
         self.gridLayout_2.addWidget(self.WidgetCanvas, 1, 0, 1, 1)
