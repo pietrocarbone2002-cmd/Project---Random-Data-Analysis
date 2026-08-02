@@ -29,19 +29,3 @@ def random_walk(start:int, steps:int, bias:float):
         walk.append(y)
 
     return time, walk
-
-start = int(input("Enter origin point: "))
-steps = int(input("Enter the amount of steps: "))
-bias = float(input("Enter the probability bias: "))
-
-data_random = random_walk(start, steps, bias)
-
-plt.plot(data_random[0], data_random[1], '-', label="Random Walk Data", color = "orange", linewidth = 1)
-
-
-plt.title("Random Data Series")
-plt.xlabel("Steps")
-plt.ylabel("Position")
-plt.legend()
-plt.grid()
-plt.show()
