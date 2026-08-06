@@ -62,10 +62,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.listWidget, 0, 0, 1, 2)
 
-        self.pushButton = QPushButton(self.widget)
-        self.pushButton.setObjectName(u"pushButton")
+        self.DataButton = QPushButton(self.widget)
+        self.DataButton.setObjectName(u"DataButton")
 
-        self.gridLayout.addWidget(self.pushButton, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.DataButton, 1, 0, 1, 1)
 
 
         self.gridLayout_2.addWidget(self.widget, 1, 1, 1, 1)

@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QLabel, QListWidget,
     QListWidgetItem, QMainWindow, QPushButton, QSizePolicy,
-    QVBoxLayout, QWidget, QHBoxLayout)
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -43,14 +43,17 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.label)
 
+
         self.gridLayout_2.addWidget(self.widget_3, 0, 0, 1, 1)
 
         self.WidgetCanvas = QWidget(self.centralwidget)
         self.WidgetCanvas.setObjectName(u"WidgetCanvas")
-
         self.verticalLayout_2 = QVBoxLayout(self.WidgetCanvas)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-
+        self.WidgetCanvas.setSizePolicy(
+        QSizePolicy.Policy.Expanding,
+        QSizePolicy.Policy.Expanding
+        )
 
         self.gridLayout_2.addWidget(self.WidgetCanvas, 1, 0, 1, 1)
 
@@ -60,13 +63,18 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.listWidget = QListWidget(self.widget)
         self.listWidget.setObjectName(u"listWidget")
+        self.listWidget.setFixedWidth(300)
+        self.listWidget.setSizePolicy(
+            QSizePolicy.Policy.Fixed,
+            QSizePolicy.Policy.Expanding
+        )
 
         self.gridLayout.addWidget(self.listWidget, 0, 0, 1, 2)
 
-        self.pushButton = QPushButton(self.widget, clicked = lambda: self.gen_data())
-        self.pushButton.setObjectName(u"pushButton")
+        self.DataButton = QPushButton(self.widget)
+        self.DataButton.setObjectName(u"DataButton")
 
-        self.gridLayout.addWidget(self.pushButton, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.DataButton, 1, 0, 1, 1)
 
 
         self.gridLayout_2.addWidget(self.widget, 1, 1, 1, 1)
@@ -99,6 +107,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Data Series Visualizer", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Create Data", None))
+        self.DataButton.setText(QCoreApplication.translate("MainWindow", u"Create Data", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Data Generation", None))
     # retranslateUi

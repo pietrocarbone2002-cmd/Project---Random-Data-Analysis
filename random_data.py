@@ -60,15 +60,16 @@ def random_mean_reverting(start:int, steps:int, sigma:float,
 
     return time, values
 
-data_random_walk = random_walk(0, 5000, 0.5)
-data_random_mr = random_mean_reverting(0, 5000, 5)
+if __name__ == "__main__":
+    data_random_walk = random_walk(0, 5000, 0.5)
+    data_random_mr = random_mean_reverting(0, 5000, 5)
 
-plt.plot(data_random_walk[0], data_random_walk[1], '-', label="Random Walk Data", color = "orange", linewidth = 1)
-plt.plot(data_random_mr[0], data_random_mr[1], '-', label="Random Mean Reverting", color = "blue", linewidth = 1)
+    plt.plot(data_random_walk[0], data_random_walk[1], '-', label="Random Walk Data", color = "orange", linewidth = 1)
+    plt.plot(data_random_mr[0], data_random_mr[1], '-', label="Random Mean Reverting", color = "blue", linewidth = 1)
 
-plt.title("Random Data Series")
-plt.xlabel("Steps")
-plt.ylabel("Position")
-plt.legend()
-plt.grid()
-plt.show()
+    plt.title("Random Data Series")
+    plt.xlabel("Steps")
+    plt.ylabel("Position")
+    plt.legend()
+    plt.grid()
+    plt.show()
