@@ -37,7 +37,15 @@ def random_walk(start:int, steps:int, bias:float):
 
 def random_mean_reverting(start:int, steps:int, sigma:float,
         theta:int = 2, mu:int = 0 #theta = reversion rate / mu = mean value / sigma = noise strength
-        ): 
+        ):
+
+    #Input Validation
+    if not isinstance(start, int):
+        raise ValueError("The start point has to be a number!")
+    if not isinstance(steps, int):
+        raise ValueError("The number of steps has to be an integer!")
+    if not isinstance(sigma, int):
+        raise ValueError("The sigma factor has to be a number between 0 and 1!")
 
     tau = 1/theta #Characteristic time scale
     dt = 0.01 * tau

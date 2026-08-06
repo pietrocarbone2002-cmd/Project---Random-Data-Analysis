@@ -19,6 +19,23 @@ class DataCreationWindow(QDialog):
         self.ui.setupUi(self)
         self.setWindowTitle("Data Generation Window")
 
+        #Loop to execute a command when a radio is selected
+        for r in (self.ui.random_walk_radio, self.ui.mean_reverting_radio):
+            r.toggled.connect(self.radio_change)
+
+        #Generate Data Button
+        self.ui.generate_data.clicked.connect(lambda: self.generate_data_click())
+
+    #Example for a simple output of a radio
+    def radio_change(self):
+
+        r = self.sender()
+        if r.isChecked():
+            print("Radio button was selected! Value:",r.text())
+
+    def generate_data_click(self):
+        self.close()
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -37,7 +54,7 @@ class MainWindow(QMainWindow):
         self.ui.DataButton.clicked.connect(self.open_data_window)
         self.secondary_wind = None
 
-        data_walk = random_mean_reverting(0, 1000, 10)
+        data_walk = [],[]
 
         self.axes = self.figure.add_subplot()
         self.axes.plot(data_walk[0], data_walk[1], color = "purple", linewidth = 0.7)
@@ -52,7 +69,7 @@ class MainWindow(QMainWindow):
 
         if self.secondary_wind is None: 
             self.secondary_wind = DataCreationWindow(self)
-            self.secondary_wind.destroyed.connect(lambda: setattr(self, "secondary_window", None))
+            self.secondary_wind.destroyed.connect(lambda: setattr(self, "secondary_wind", None))
             self.secondary_wind.show()
         else:
             self.secondary_wind.raise_()
