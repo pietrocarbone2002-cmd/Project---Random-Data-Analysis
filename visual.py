@@ -1,6 +1,6 @@
 from edited_frontend import Ui_MainWindow
 from PySide6.QtWidgets import *
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import *
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -11,6 +11,9 @@ from secondary_window import Ui_Dialog
 
 
 class DataCreationWindow(QDialog):
+
+    parameter_submitted = Signal(float, int, float)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
@@ -19,22 +22,36 @@ class DataCreationWindow(QDialog):
         self.ui.setupUi(self)
         self.setWindowTitle("Data Generation Window")
 
-        #Loop to execute a command when a radio is selected
-        for r in (self.ui.random_walk_radio, self.ui.mean_reverting_radio):
-            r.toggled.connect(self.radio_change)
-
         #Generate Data Button
         self.ui.generate_data.clicked.connect(lambda: self.generate_data_click())
 
-    #Example for a simple output of a radio
-    def radio_change(self):
-
-        r = self.sender()
-        if r.isChecked():
-            print("Radio button was selected! Value:",r.text())
-
     def generate_data_click(self):
+
+        radio = self.sender()
+        
+        #Random Walk
+        if self.ui.random_walk_radio:
+            start = self.ui.start_point_enter.text()
+            steps = self.ui.steps_enter.text()
+            bias = self.ui.bias_value_enter.text()
+
+            self.parameter_submitted.emit(start, steps, bias)
+
+        elif self.ui.mean_reverting_radio:
+            start = self.ui.start_value_enter.text()
+            steps = self.ui.steps_mr_enter.text()
+            sigma = self.ui.sigma_value_enter.text()
+
+            self.parameter_submitted.emit(start, steps, sigma)
+        else:
+            QMessageBox.information(self,"Info", "Enter all required information!")
+
+        #Close the dialog
         self.close()
+
+#-------------------------------------------------------------------------------------------------
+# MAIN WINDOW
+#-------------------------------------------------------------------------------------------------
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -54,10 +71,10 @@ class MainWindow(QMainWindow):
         self.ui.DataButton.clicked.connect(self.open_data_window)
         self.secondary_wind = None
 
-        data_walk = [],[]
+        data = [],[]
 
         self.axes = self.figure.add_subplot()
-        self.axes.plot(data_walk[0], data_walk[1], color = "purple", linewidth = 0.7)
+        self.axes.plot(data[0], data[1], color = "purple", linewidth = 0.7)
         self.axes.set_title("Random Data Series")
         self.axes.set_xlabel("Steps")
         self.axes.set_ylabel("Values")
@@ -83,19 +100,3 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
-
-# start = int(input("Enter origin point: "))
-# steps = int(input("Enter the amount of steps: "))
-# bias = float(input("Enter the probability bias: "))
-
-# data_random = rd.random_walk(start, steps, bias)
-
-# plt.plot(data_random[0], data_random[1], '-', label="Random Walk Data", color = "orange", linewidth = 1)
-
-
-# plt.title("Random Data Series")
-# plt.xlabel("Steps")
-# plt.ylabel("Position")
-# plt.legend()
-# plt.grid()
-# plt.show()
