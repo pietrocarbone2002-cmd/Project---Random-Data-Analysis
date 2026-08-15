@@ -12,7 +12,7 @@ from secondary_window import Ui_Dialog
 
 class DataCreationWindow(QDialog):
 
-    parameter_submitted = Signal(float, int, float)
+    parameter_submitted = Signal(str, int, int, float)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -23,30 +23,29 @@ class DataCreationWindow(QDialog):
         self.setWindowTitle("Data Generation Window")
 
         #Generate Data Button
-        self.ui.generate_data.clicked.connect(lambda: self.generate_data_click())
+        self.ui.generate_data.clicked.connect(lambda: self.generate_data_click)
 
     def generate_data_click(self):
-
-        radio = self.sender()
         
         #Random Walk
-        if self.ui.random_walk_radio:
-            start = self.ui.start_point_enter.text()
-            steps = self.ui.steps_enter.text()
-            bias = self.ui.bias_value_enter.text()
+        if self.ui.random_walk_radio.isChecked():
+            start = int(self.ui.start_point_enter.text())
+            steps = int(self.ui.steps_enter.text())
+            bias = float(self.ui.bias_value_enter.text())
 
-            self.parameter_submitted.emit(start, steps, bias)
+            self.parameter_submitted.emit("random_walk",start, steps, bias)
+        
+        elif self.ui.mean_reverting_radio.isChecked():
+            start = int(self.ui.start_value_enter.text())
+            steps = int(self.ui.steps_mr_enter.text())
+            sigma = float(self.ui.sigma_value_enter.text())
 
-        elif self.ui.mean_reverting_radio:
-            start = self.ui.start_value_enter.text()
-            steps = self.ui.steps_mr_enter.text()
-            sigma = self.ui.sigma_value_enter.text()
+            self.parameter_submitted.emit("random_mean_reverting",start, steps, sigma)
 
-            self.parameter_submitted.emit(start, steps, sigma)
         else:
             QMessageBox.information(self,"Info", "Enter all required information!")
+            return
 
-        #Close the dialog
         self.close()
 
 #-------------------------------------------------------------------------------------------------
@@ -71,21 +70,46 @@ class MainWindow(QMainWindow):
         self.ui.DataButton.clicked.connect(self.open_data_window)
         self.secondary_wind = None
 
-        data = [],[]
-
+        self.data = ([],[])
         self.axes = self.figure.add_subplot()
-        self.axes.plot(data[0], data[1], color = "purple", linewidth = 0.7)
+
+        self.axes.clear()
+
+        self.axes.plot(self.data[0], self.data[1], color = "purple", linewidth = 0.7)
         self.axes.set_title("Random Data Series")
         self.axes.set_xlabel("Steps")
         self.axes.set_ylabel("Values")
         self.axes.grid()
+
         self.canvas.draw()
 
+    def update_plot(self):
+
+        self.axes.clear()
+
+        self.axes.plot(self.data[0], self.data[1], color = "purple", linewidth = 0.7)
+        self.axes.set_title("Random Data Series")
+        self.axes.set_xlabel("Steps")
+        self.axes.set_ylabel("Values")
+        self.axes.grid()
+
+        self.canvas.draw()
+
+    def generate_data(self, method, start, steps, parameter):
+
+        if method == "random_walk":
+            self.data = random_walk(start, steps, parameter)
+
+        if method == "random_mean_reverting":
+            self.data = random_mean_reverting(start, steps, parameter)
+
+        self.update_plot()
 
     def open_data_window(self):
 
         if self.secondary_wind is None: 
             self.secondary_wind = DataCreationWindow(self)
+            self.secondary_wind.parameter_submitted.connect(self.generate_data)
             self.secondary_wind.destroyed.connect(lambda: setattr(self, "secondary_wind", None))
             self.secondary_wind.show()
         else:

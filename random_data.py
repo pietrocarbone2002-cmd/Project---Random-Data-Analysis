@@ -13,7 +13,7 @@ def random_walk(start:int, steps:int, bias:float):
         raise ValueError("The start point has to be a number!")
     if not isinstance(steps, int):
         raise ValueError("The number of steps has to be an integer!")
-    if not isinstance(bias, float) or bias > 1.0 or bias < 0:
+    if not isinstance(bias, (int,float)) or bias > 1.0 or bias < 0:
         raise ValueError("The series bais has to be a number between 0 and 1!")
 
     #Random Walk generation
@@ -44,7 +44,7 @@ def random_mean_reverting(start:int, steps:int, sigma:float,
         raise ValueError("The start point has to be a number!")
     if not isinstance(steps, int):
         raise ValueError("The number of steps has to be an integer!")
-    if not isinstance(sigma, int):
+    if not isinstance(sigma, (int,float)):
         raise ValueError("The sigma factor has to be a number between 0 and 1!")
 
     tau = 1/theta #Characteristic time scale
