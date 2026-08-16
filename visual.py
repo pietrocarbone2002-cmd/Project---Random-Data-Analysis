@@ -11,6 +11,7 @@ from secondary_window import Ui_Dialog
 import arrow
 from pathlib import Path
 import os
+import random
 
 class DataCreationWindow(QDialog):
 
@@ -65,6 +66,14 @@ class DataCreationWindow(QDialog):
 #-------------------------------------------------------------------------------------------------
 
 class MainWindow(QMainWindow):
+
+    colors = {
+        1:"red", 
+        2:"blue", 
+        3:"green",
+        4:"purple"
+        }
+    
     def __init__(self):
         super().__init__()
 
@@ -84,6 +93,7 @@ class MainWindow(QMainWindow):
 
         self.data_list = os.listdir("Data")
         self.ui.listWidget.addItems(self.data_list)
+        self.ui.listWidget.itemDoubleClicked.connect(self.load_data)
 
         self.ui.DeleteButton.clicked.connect(self.delete_data)
 
@@ -92,7 +102,9 @@ class MainWindow(QMainWindow):
 
         self.axes.clear()
 
-        self.axes.plot(self.data[0], self.data[1], color = "purple", linewidth = 0.7)
+
+        
+        self.axes.plot(self.data[0], self.data[1], color = self.colors[random.randint(1,len(self.colors))], linewidth = 0.8)
         self.axes.set_title("Random Data Series")
         self.axes.set_xlabel("Steps")
         self.axes.set_ylabel("Values")
@@ -110,18 +122,36 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self,"Info", "You must select a file to delete!")
             return
         
-
     def update_plot(self):
 
         self.axes.clear()
 
-        self.axes.plot(self.data[0], self.data[1], color = "purple", linewidth = 0.7)
+        self.axes.plot(self.data[0], self.data[1], color = self.colors[random.randint(1,len(self.colors))], linewidth = 0.8)
         self.axes.set_title("Random Data Series")
         self.axes.set_xlabel("Steps")
         self.axes.set_ylabel("Values")
         self.axes.grid()
 
         self.canvas.draw()
+
+    def load_data(self):
+        item = self.ui.listWidget.currentItem()
+        filepath = f"Data/{item.text()}"
+
+
+        with open(filepath, "r") as loaded_data:
+            reader = csv.DictReader(loaded_data, delimiter=",")
+
+            steps = []
+            values = []
+
+            for i in reader:
+                steps.append(int(i["step"]))
+                values.append(float(i["value"]))
+
+        self.data = (steps, values)
+        self.update_plot()
+
 
     def generate_data(self, method, start, steps, parameter):
 
@@ -139,11 +169,14 @@ class MainWindow(QMainWindow):
         data_file = data_path / name
 
         with data_file.open("w", newline="", encoding="utf-8") as file:
-            writer = csv.writer(file)
-            writer.writerow(["Value"])
+            writer = csv.writer(file, delimiter=",")
+            writer.writerow(["step","value"])
 
-            for value in self.data:
-                writer.writerow([value])
+            x = self.data[0]
+            y = self.data[1]
+
+            for a,b in zip(x,y):
+                writer.writerow([a,b])
 
         self.ui.listWidget.addItem(f"{name}")
 
