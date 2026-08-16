@@ -4,11 +4,12 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import *
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import numpy as np
+import csv
 from matplotlib .figure import Figure
 from random_data import random_mean_reverting, random_walk
 from secondary_window import Ui_Dialog
-
+import arrow
+from pathlib import Path
 
 class DataCreationWindow(QDialog):
 
@@ -23,25 +24,35 @@ class DataCreationWindow(QDialog):
         self.setWindowTitle("Data Generation Window")
 
         #Generate Data Button
-        self.ui.generate_data.clicked.connect(lambda: self.generate_data_click)
+        self.ui.generate_data.clicked.connect(lambda: self.generate_data_click())
 
     def generate_data_click(self):
         
         #Random Walk
         if self.ui.random_walk_radio.isChecked():
-            start = int(self.ui.start_point_enter.text())
-            steps = int(self.ui.steps_enter.text())
-            bias = float(self.ui.bias_value_enter.text())
+            start_text = self.ui.start_value_enter.text()
+            steps_text = self.ui.steps_enter.text()
+            bias_text = self.ui.bias_value_enter.text()
+
+            start = int(start_text)
+            steps = int(steps_text)
+            bias = float(bias_text)
 
             self.parameter_submitted.emit("random_walk",start, steps, bias)
-        
+
+        #Random Mean Reverting
         elif self.ui.mean_reverting_radio.isChecked():
-            start = int(self.ui.start_value_enter.text())
-            steps = int(self.ui.steps_mr_enter.text())
-            sigma = float(self.ui.sigma_value_enter.text())
+            start_text = self.ui.start_point_enter.text()
+            steps_text = self.ui.steps_mr_enter.text()
+            sigma_text = self.ui.sigma_value_enter.text()
+
+            start = int(start_text)
+            steps = int(steps_text)
+            sigma = float(sigma_text)
 
             self.parameter_submitted.emit("random_mean_reverting",start, steps, sigma)
 
+        #No Method Selected
         else:
             QMessageBox.information(self,"Info", "Enter all required information!")
             return
@@ -70,6 +81,8 @@ class MainWindow(QMainWindow):
         self.ui.DataButton.clicked.connect(self.open_data_window)
         self.secondary_wind = None
 
+        self.ui.DeleteButton.clicked.connect(lambda: self.ui.listWidget.takeItem(self.ui.listWidget.currentRow))
+
         self.data = ([],[])
         self.axes = self.figure.add_subplot()
 
@@ -82,6 +95,10 @@ class MainWindow(QMainWindow):
         self.axes.grid()
 
         self.canvas.draw()
+
+    def delete_data(self):
+        self.ui.listWidget.takeItem(self.ui.listWidget.currentItem())
+        
 
     def update_plot(self):
 
@@ -102,6 +119,22 @@ class MainWindow(QMainWindow):
 
         if method == "random_mean_reverting":
             self.data = random_mean_reverting(start, steps, parameter)
+
+        data_path = Path("Data")
+        data_path.mkdir(parents=True, exist_ok=True)
+
+        now = arrow.now()
+        name = f"Random_Data_Series_{method}_{now.format('YYYY_MM_DD_HHmmss')}.csv"
+        data_file = data_path / name
+
+        with data_file.open("w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Value"])  # optional header
+
+            for value in self.data:
+                writer.writerow([value])
+
+        self.ui.listWidget.addItem(f"{name}")
 
         self.update_plot()
 

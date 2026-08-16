@@ -65,7 +65,11 @@ class Ui_MainWindow(object):
         self.DataButton = QPushButton(self.widget)
         self.DataButton.setObjectName(u"DataButton")
 
+        self.DeleteButton = QPushButton(self.widget)
+        self.DeleteButton.setObjectName(u"DeleteButton")
+
         self.gridLayout.addWidget(self.DataButton, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.DeleteButton, 0, 1, 1, 1)
 
 
         self.gridLayout_2.addWidget(self.widget, 1, 1, 1, 1)

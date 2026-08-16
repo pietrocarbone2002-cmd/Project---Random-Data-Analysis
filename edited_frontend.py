@@ -74,7 +74,12 @@ class Ui_MainWindow(object):
         self.DataButton = QPushButton(self.widget)
         self.DataButton.setObjectName(u"DataButton")
 
+
+        self.DeleteButton = QPushButton(self.widget)
+        self.DeleteButton.setObjectName(u"DeleteButton")
+
         self.gridLayout.addWidget(self.DataButton, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.DeleteButton, 1, 1, 1, 1)
 
 
         self.gridLayout_2.addWidget(self.widget, 1, 1, 1, 1)
@@ -108,5 +113,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Data Series Visualizer", None))
         self.DataButton.setText(QCoreApplication.translate("MainWindow", u"Create Data", None))
+        self.DeleteButton.setText(QCoreApplication.translate("MainWindow", u"Delete Data", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Data Generation", None))
     # retranslateUi
