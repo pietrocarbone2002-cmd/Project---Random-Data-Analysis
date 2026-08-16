@@ -10,6 +10,7 @@ from random_data import random_mean_reverting, random_walk
 from secondary_window import Ui_Dialog
 import arrow
 from pathlib import Path
+import os
 
 class DataCreationWindow(QDialog):
 
@@ -81,7 +82,10 @@ class MainWindow(QMainWindow):
         self.ui.DataButton.clicked.connect(self.open_data_window)
         self.secondary_wind = None
 
-        self.ui.DeleteButton.clicked.connect(lambda: self.ui.listWidget.takeItem(self.ui.listWidget.currentRow))
+        self.data_list = os.listdir("Data")
+        self.ui.listWidget.addItems(self.data_list)
+
+        self.ui.DeleteButton.clicked.connect(self.delete_data)
 
         self.data = ([],[])
         self.axes = self.figure.add_subplot()
@@ -97,7 +101,14 @@ class MainWindow(QMainWindow):
         self.canvas.draw()
 
     def delete_data(self):
-        self.ui.listWidget.takeItem(self.ui.listWidget.currentItem())
+        item = self.ui.listWidget.currentItem()
+
+        if item is not None:
+            os.remove(f"Data/{item.text()}")
+            self.ui.listWidget.takeItem(self.ui.listWidget.currentRow())
+        else:
+            QMessageBox.information(self,"Info", "You must select a file to delete!")
+            return
         
 
     def update_plot(self):
@@ -124,12 +135,12 @@ class MainWindow(QMainWindow):
         data_path.mkdir(parents=True, exist_ok=True)
 
         now = arrow.now()
-        name = f"Random_Data_Series_{method}_{now.format('YYYY_MM_DD_HHmmss')}.csv"
+        name = f"{method}_{now.format('YYYY_MM_DD_HHmmss')}.csv"
         data_file = data_path / name
 
         with data_file.open("w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
-            writer.writerow(["Value"])  # optional header
+            writer.writerow(["Value"])
 
             for value in self.data:
                 writer.writerow([value])
